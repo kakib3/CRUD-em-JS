@@ -1,3 +1,4 @@
+const { ClientRequest } = require('http');
 
 const rl = require('readline').createInterface({
     input: process.stdin,
@@ -56,12 +57,15 @@ function listarCadastros(){
     rl.question("\nUma pesquisa de cadastro específico (y/n)? ", (listarCadastroeEspecificoRL) => {
         if(listarCadastroeEspecificoRL === "y"){
             rl.question("ID a ser procurado: ", (idEspecificoRL) =>{
-                for (let i = idEspecificoRL; i < cliente.nome.length; i++){
-                console.log(`\n-------------\n   ID: ${i}\n-------------`);
-                console.log("Nome:" + cliente.nome[i]);
-                console.log("CPF:" + cliente.CPF[i]);
-                console.log("Celular:" + cliente.celular[i]);
-                console.log("Email:" + cliente.email[i]);
+                let idEspecifico = Number(idEspecificoRL);
+                if(idEspecifico >= 0 && idEspecifico < cliente.nome.length){
+                    console.log(`\n-------------\n   ID: ${idEspecifico}\n-------------`);
+                    console.log("Nome:" + cliente.nome[idEspecifico]);
+                    console.log("CPF:" + cliente.CPF[idEspecifico]);
+                    console.log("Celular:" + cliente.celular[idEspecifico]);
+                    console.log("Email:" + cliente.email[idEspecifico]);                    
+                } else{
+                    console.log("ID inválido ou não encontrado.");
                 }
                 menu();
             })
@@ -77,15 +81,6 @@ function listarCadastros(){
             menu();
         }
     })
-
-    /*for (let i = 0; i < cliente.nome.length; i++){
-        console.log(`\n-------------\n   ID: ${i}\n-------------`);
-        console.log("Nome:" + cliente.nome[i]);
-        console.log("CPF:" + cliente.CPF[i]);
-        console.log("Celular:" + cliente.celular[i]);
-        console.log("Email:" + cliente.email[i]);
-    }
-    menu();*/
 }
 
 function atualizarCadastro(){
@@ -95,41 +90,65 @@ function atualizarCadastro(){
     }
 
     rl.question("Digite o ID do cadastro do cliente que deseja atualizar: ", (idAtualizarRL) => {
-        let id = Number(idAtualizarRL);
-        if(id >= 0 && id < cliente.nome.length){
+        let idAtualizar = Number(idAtualizarRL);
+        if(idAtualizar >= 0 && idAtualizar < cliente.nome.length){
             rl.question("Nome do cliente: ", (novoNomeRL) => {
-                cliente.nome[id] = novoNomeRL;
+                cliente.nome[idAtualizar] = novoNomeRL;
                 rl.question("CPF: ", (novoCpfRL) => {
-                    cliente.CPF[id]= novoCpfRL;
+                    cliente.CPF[idAtualizar]= novoCpfRL;
                     rl.question("Número celular: ", (novoCelularRL) => {
-                        cliente.celular[id] = novoCelularRL;
+                        cliente.celular[idAtualizar] = novoCelularRL;
                         rl.question("Email: ", (novoEmailRL) => {
-                            cliente.email[id] = novoEmailRL;
+                            cliente.email[idAtualizar] = novoEmailRL;
                             menu();
                         })
                      })
                 })
             })
+
         } else{
             console.log("ID inválido!\n")
             menu();
         }
+
     })
 }
 
 function excluirCadastro(){
-    
+    if(cliente.nome.length === 0){
+        console.log("\nNão há clientes cadastrados.")
+        menu();
+    }
+
+    rl.question("Digite o ID do cliente que deseja excluir: ", (idExcluirRL) => {
+        let idExcluir = Number(idExcluirRL);
+        if(idExcluir >= 0 && idExcluir < cliente.nome.length){
+            cliente.nome.splice(idExcluir, 1);
+            cliente.CPF.splice(idExcluir, 1);
+            cliente.celular.splice(idExcluir, 1);
+            cliente.email.splice(idExcluir, 1);
+
+            console.log("Cadastro excluído com sucesso.");
+            menu();
+
+        } else{
+            console.log("ID inválido!\n")
+            menu();
+        }
+
+    })
 }
 
 function menu(){
-    console.log("\n------------------- CADASTROS DE CLIENTES -------------------\n")
+    console.log("\n------------------- CADASTROS DE CLIENTES -------------------")
     console.log("1 - Cadastro de clientes");
     console.log("2 - Mostrar cadastros");
     console.log("3 - Atualizar cadastro");
     console.log("4 - Excluir cadastro");
     console.log("5 - Sair");
+    console.log("-------------------------------------------------------------\n")
 
-    rl.question("\nDigite o número da ação: ", (escolhaAcaoRL) => {
+    rl.question("Digite o número da ação: ", (escolhaAcaoRL) => {
     
         const escolhaAcao = Number(escolhaAcaoRL);
 
