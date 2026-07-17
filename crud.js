@@ -5,12 +5,12 @@ const rl = require('readline').createInterface({
 })
 
 var clientes = [];
-
 var atual = 0;
+var proximoId = 1;
 
 function cadastrar(quantidade){
     console.log("\n-----------------------------")
-    console.log(`Cadastro do cliente ${atual}`);
+    console.log(`Cadastro do cliente ${atual + 1}`);
     console.log("-----------------------------")
     rl.question("Nome do cliente: ", (nomeRL) => {
         rl.question("CPF: ", (cpfRL) => {
@@ -18,12 +18,14 @@ function cadastrar(quantidade){
                 rl.question("Email: ", (emailRL) => {
 
                     let novoCliente = {
+                        id: proximoId,
                         nome: nomeRL,
                         cpf: cpfRL,
                         celular: celularRL,
                         email: emailRL
                     };
                     clientes.push(novoCliente);
+                    proximoId++;
 
                     atual++;
                     if(atual < quantidade){
@@ -49,14 +51,15 @@ function listarCadastros(){
     rl.question("\nUma pesquisa de cadastro específico (y/n)? ", (listarCadastroeEspecificoRL) => {
         if(listarCadastroeEspecificoRL === "y"){
             rl.question("ID a ser procurado: ", (idEspecificoRL) =>{
-                let idEspecifico = Number(idEspecificoRL - 1);
+                let idEspecifico = Number(idEspecificoRL);
+                let clienteEncontrado = clientes.find(c => c.id === idEspecifico);
 
-                if(idEspecifico >= 0 && idEspecifico < clientes.length){
-                    console.log(`\n-------------\n   ID: ${idEspecifico}\n-------------`);
-                    console.log("Nome:" + clientes[idEspecifico].nome);
-                    console.log("CPF:" + clientes[idEspecifico].cpf);
-                    console.log("Celular:" + clientes[idEspecifico].celular);
-                    console.log("Email:" + clientes[idEspecifico].email); 
+                if(clienteEncontrado){
+                    console.log(`\n-------------\n   ID: ${clienteEncontrado.id}\n-------------`);
+                    console.log("Nome:" + clienteEncontrado.nome);
+                    console.log("CPF:" + clienteEncontrado.cpf);
+                    console.log("Celular:" + clienteEncontrado.celular);
+                    console.log("Email:" + clienteEncontrado.email); 
 
                 } else{
                     console.log("ID inválido ou não encontrado.");
@@ -67,7 +70,7 @@ function listarCadastros(){
         }
         else{
             for (let i = 0; i < clientes.length; i++){
-            console.log(`\n-------------\n   ID: ${i}\n-------------`);
+            console.log(`\n-------------\n   ID: ${clientes[i].id}\n-------------`);
             console.log("Nome:" + clientes[i].nome);
             console.log("CPF:" + clientes[i].cpf);
             console.log("Celular:" + clientes[i].celular);
@@ -87,15 +90,17 @@ function atualizarCadastro(){
 
     rl.question("Digite o ID do cadastro do cliente que deseja atualizar: ", (idAtualizarRL) => {
         let idAtualizar = Number(idAtualizarRL);
-        if(idAtualizar >= 0 && idAtualizar < clientes.length){
+        let indice = clientes.findIndex(c => c.id === idAtualizar);
+
+        if(indice !== -1){
             rl.question("Nome do cliente: ", (novoNomeRL) => {
-                clientes[idAtualizar].nome = novoNomeRL;
+                clientes[indice].nome = novoNomeRL;
                 rl.question("CPF: ", (novoCpfRL) => {
-                    clientes[idAtualizar].cpf = novoCpfRL;
+                    clientes[indice].cpf = novoCpfRL;
                     rl.question("Número celular: ", (novoCelularRL) => {
-                        clientes[idAtualizar].celular = novoCelularRL;
+                        clientes[indice].celular = novoCelularRL;
                         rl.question("Email: ", (novoEmailRL) => {
-                            clientes[idAtualizar].email = novoEmailRL;
+                            clientes[indice].email = novoEmailRL;
                             menu();
                         })
                      })
@@ -119,8 +124,10 @@ function excluirCadastro(){
 
     rl.question("Digite o ID do cliente que deseja excluir: ", (idExcluirRL) => {
         let idExcluir = Number(idExcluirRL);
-        if(idExcluir >= 0 && idExcluir < clientes.length){
-            clientes.splice(idExcluir, 1);
+        let indice = clientes.findIndex(c => c.id === idExcluir);
+        
+        if(indice !== -1){
+            clientes.splice(indice, 1);
 
             console.log("Cadastro excluído com sucesso.");
             menu();
